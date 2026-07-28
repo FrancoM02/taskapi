@@ -1,0 +1,23 @@
+# Variables de entorno — NUNCA al repositorio
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs
+.vscode/
+.idea/
+
+# Alembic (versiones generadas localmente)
+alembic/versions/*.py

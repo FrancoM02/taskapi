@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine          # alpine = imagen más liviana
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taskapi
+      POSTGRES_PASSWORD: taskapi_password
+      POSTGRES_DB: taskapi
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # persiste los datos entre reinicios
+    ports:
+      - "5432:5432"                    # expone la BD para herramientas locales
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskapi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://taskapi:taskapi_password@db:5432/taskapi
+      SECRET_KEY: ${SECRET_KEY}        # Se lee del archivo .env del host
+    depends_on:
+      db:
+        condition: service_healthy     # Espera a que Postgres esté listo
+    volumes:
+      - ./app:/home/appuser/app/app    # Hot-reload en desarrollo
+
+volumes:
+  postgres_data:
